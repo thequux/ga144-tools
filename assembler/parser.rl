@@ -9,19 +9,19 @@ action ZeroLit {
 }
 action HexChar {
 	if fc < '9' {
-		lit = lit * 16 + fc - '0';
+		lit = lit * 16 + int(fc - '0');
 	} else {
-		lit = lit * 16 + (fc & 0xFD) - 'A' + 10;
+		lit = lit * 16 + int((fc & 0xFD) - 'A' + 10);
 	}
 }
 action DecChar {
-	lit = lit * 10 + fc - '0';
+	lit = lit * 10 + int(fc - '0');
 }
 action OctChar {
-	lit = lit * 8 + fc - '0';
+	lit = lit * 8 + int(fc - '0');
 }
 action BinChar {
-	lit = lit * 2 + fc - '0';
+	lit = lit * 2 + int(fc - '0');
 }
 
 nl = "\n" %{self.line++; self.col = 0};
@@ -98,13 +98,19 @@ func (self *Assembler) RunPass(data []byte) error {
 	p := 0
 	pe := len(data)
 	eof := pe
-	stack := make([]int, 10)
-	top := 0
+	// stack := make([]int, 10)
+	// top := 0
 
-	var act int
-	var ts, te int
+	// var act int
+	// var ts, te int
 
+	// variables used by machine
+	var lit, opc int
+	var name string
+	
 	%% write exec;
+
+	return nil
 }
 
 
