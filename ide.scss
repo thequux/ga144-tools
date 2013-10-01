@@ -1,0 +1,78 @@
+$bg_default: #333;
+$bg_virtual: black;
+$fg_compile: #0f0;
+$fg_exec: #ff0; 
+$fg_define: #f00;
+$fg_comment: #fff;
+$fg_variable: #f0f;
+$fg_feedback: #ccc;
+$fg_display: #08f;
+
+@mixin virtual {
+    background: $bg_virtual;
+    font-style: italic;
+    font-weight: normal;
+}
+
+body {
+    margin: 0;
+}
+
+.cf {
+    width: calc(50% - 4ex);
+    margin: 1ex;
+    padding: 1ex;
+    font-family: monospace;
+    background: $bg_default;   
+    font-weight: bold;
+    
+    .exec { color: $fg_exec; }
+    .define { color: $fg_define; }
+    .compile { color: $fg_compile; }
+    .comment { color: $fg_comment; }
+    .variable { color: $fg_variable; }
+    .feedback { color: $fg_feedback; @include virtual;}
+    .display { color: $fg_display; }
+    [data-value]::after {
+	@include virtual;
+	margin-left: 1ex;
+	content: attr(data-value);
+	color: $fg_compile;
+    }
+}
+
+#code {
+    float: left;
+}
+#shadow {
+    float: right;
+}
+
+.highlight {
+    border: 1px solid red;
+}
+
+.hyper {
+    color: blue;
+    text-decoration: underline;
+}
+
+.active:hover {
+    text-decoration: underline;
+}
+
+.clear {
+    clear: both;
+}
+
+.closer {
+    color: #f00;
+    font-family: monospace;
+    margin-right: 1ex;
+    content: "X";
+}
+.refbox {
+    border: 1px solid #08f;
+    width: calc(100% - 2ex);
+    margin: 1ex 0.5ex;
+}
