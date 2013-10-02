@@ -5,6 +5,7 @@
 # - Load the image into colorforth
 # - type '0 !back '
 # - At your terminal, run "python cfdec.py <OkadBack.cf >Okad.json"
+# - cat =(echo -n 'OkadSrc = ') Okad.json =(echo ';') >okad-src.js
 #
 # On Windows, you will find OkadBack.cf in C:\GreenArrays\EVB001\OkadBack.cf
 # On Linux, it's in ~/.wine/dosdevices/c:/GreenArrays/EVB001/OkadBack.cf
@@ -82,10 +83,14 @@ class BitStream(object):
         self.bits = bits
         self.val = val
     def peek(self, b):
-        if self.bits >= b:
-            return (self.val >> (self.bits - b)) % (1 << b)
+        if self.bits > 0:
+            # Ew. Apparently the word needs to be padded with enough 0
+            # bits to fill out the last character
+            return ((self.val << b) >> self.bits) % (1 << b)
         else:
             raise StopIteration()
+    def bitsel(self, start, count):
+        return (self.val >> start) % (1 << count)
     def pop(self, b):
         v = self.peek(b)
         self.bits -= b
@@ -98,12 +103,15 @@ def Word2Str(word, bits):
         while True:
             if bs.pop(1) == 0: # "0"
                 v = bs.pop(3)
+                #print (bs.bits, 4, CHARSET[4][v])
                 yield CHARSET[4][v]
             elif bs.pop(1) == 0: # "10"
                 v = bs.pop(3)
+                #print (bs.bits, 5, CHARSET[5][v])
                 yield CHARSET[5][v]
             else: # "11"
                 v = bs.pop(5)
+                #print (bs.bits, 7, CHARSET[7][v])
                 yield CHARSET[7][v]
     except StopIteration:
         pass

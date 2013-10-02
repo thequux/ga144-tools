@@ -102,6 +102,8 @@ initDisplayWords = () ->
             params.noNL = yes
         "br": (dest, word, params) ->
             dest.append(" ", word, "<br>")
+        "indent": (dest, word, params) ->
+            dest.append(word, "<br>", "<span style='width: 8ex'>&nbsp;</span>")
         ".": justPrint yes
         "..": justPrint yes
         "...": justPrint yes
@@ -187,4 +189,7 @@ window.onpopstate = (event) =>
 
 $ ->
     window.CodeBrowser = new CodeBrowser(OkadSrc)
-    window.CodeBrowser.list(18)
+    if location.hash
+        window.CodeBrowser.list(location.hash.substr(1) - '0')
+    else
+        window.CodeBrowser.list(18)

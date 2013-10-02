@@ -1,6 +1,9 @@
 // Go code
 package assembler;
 
+import "github.com/golang/glog"
+var _ = glog.Info
+
 %%{
 machine f18a;
 
@@ -8,10 +11,11 @@ action ZeroLit {
 	lit = 0;
 }
 action HexChar {
-	if fc < '9' {
+	// glog.Infof("Parsed char %q; current lit is %x", fc, lit)
+	if fc <= '9' {
 		lit = lit * 16 + int(fc - '0');
 	} else {
-		lit = lit * 16 + int((fc & 0xFD) - 'A' + 10);
+		lit = lit * 16 + int((fc & 0xFD) - 'a' + 10);
 	}
 }
 action DecChar {
@@ -25,7 +29,9 @@ action BinChar {
 }
 
 nl = "\n" %{self.line++; self.col = 0};
-wsp = [ \t] | nl ;
+
+comment = "#" [^\r\n]* nl | '{' [0-9a-fA-F]+ '}';
+wsp = [ \t] | nl | comment;
 
 lit =	( "0x" ( [0-9A-Za-z] )+ $HexChar
 	| '0' 'o'? ( [0-7] )+ $OctChar
@@ -37,7 +43,10 @@ lit =	( "0x" ( [0-9A-Za-z] )+ $HexChar
 
 # litp = ( wsp* '[' lit ']' )? >ZeroLit ;
 
-name = [A-Za-z_][A-Za-z_0-9]*
+justOps = "ex" | /u?next/ | /-?if/ | /[@!][pb+]?/
+        | "+*" | [+;~a.] | /2[*/]/ | /and|xor|drop|dup|pop|over|nop|push|[ba]!/;
+
+name = (([A-Za-z_][A-Z.a-z_0-9]*) - "next")
 	>{nameStart = fpc}
 	%{name = string(data[nameStart:fpc])};
 
@@ -86,7 +95,6 @@ directive =
 	| ':' wsp* name		%{self.defName(name);}
 	);
 
-comment = "#" [^\r\n]* nl ;
 
 program := (wsp* (directive | opcode)
 	    (wsp+ (directive | opcode) )*
