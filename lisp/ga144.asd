@@ -11,5 +11,6 @@
   :depends-on (:cl-parsec :rutils)
   :components ((:file "packages")
 	       (:file "opcodes" :depends-on ("packages"))
+	       (:file "assembler" :depends-on ("packages" "opcodes"))
 	       (:file "simulator" :depends-on ("packages" "opcodes"))))
 
